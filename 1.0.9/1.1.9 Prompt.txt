@@ -1,0 +1,187 @@
+1.1.9 Prompt
+
+Continued conversion with 1.0.9 prompt context.
+
+Above the price can you add a total circulating supply count and also the current mining halving epoch and current block reward for miners?
+
+I’ve updated the code to include the total circulating supply, current mining halving epoch, and current block reward for miners above the Ravencoin price. The circulating supply is fetched from the CoinGecko API, while the halving epoch and block reward are derived from known Ravencoin halving data. The TradingView chart remains below the price as requested. Below is the revised code with explanations.
+Updated Code
+
+<!-- Created by Grok 3, built by xAI, Prompted by @ImLinker on May 20, 2025, Modified on June 1, 2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravencoin Price</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .banner {
+            width: 100%;
+            background-color: #1a1a3d; /* Ravencoin dark theme */
+            text-align: center;
+        }
+        .banner img {
+            width: 100%;
+            max-width: 600px; /* Adjust to fit the wide logo */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #price, #supply, #halving, #reward {
+            font-size: 24px;
+            color: #333;
+            margin: 10px 0;
+        }
+        #error {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 400px; /* Fixed height for chart */
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <a href="https://ravencoin.org" target="_blank">
+            <img src="https://ravencoin.org/assets/img/media/logo-wide-sm.png" alt="Ravencoin Logo">
+        </a>
+    </div>
+    <h1>Ravencoin Current Price</h1>
+    <div id="supply">Loading circulating supply...</div>
+    <div id="halving">Loading halving epoch...</div>
+    <div id="reward">Loading block reward...</div>
+    <div id="price">Loading price...</div>
+    <div id="error"></div>
+    <div class="chart-container">
+        <div class="tradingview-widget-container">
+            <div id="tradingview_ravencoin"></div>
+            <div class="tradingview-widget-copyright">
+                <a href="https://www.tradingview.com/symbols/RVNUSD/" rel="noopener" target="_blank">
+                    <span class="blue-text">RVNUSD Chart</span>
+                </a> by TradingView
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchRavencoinData() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/ravencoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
+                const data = await response.json();
+                
+                // Update circulating supply
+                if (data.market_data && data.market_data.circulating_supply) {
+                    document.getElementById('supply').innerText = `Circulating Supply: ${data.market_data.circulating_supply.toLocaleString()} RVN`;
+                } else {
+                    throw new Error('Circulating supply data not available');
+                }
+
+                // Update price
+                if (data.market_data && data.market_data.current_price && data.market_data.current_price.usd) {
+                    document.getElementById('price').innerText = `$${data.market_data.current_price.usd.toFixed(4)} USD`;
+                } else {
+                    throw new Error('Price data not available');
+                }
+            } catch (error) {
+                document.getElementById('error').innerText = 'Error fetching data: ' + error.message;
+            }
+
+            // Hard-coded halving epoch and block reward based on known data
+            const currentBlockHeight = 3868576; // As of May 2025, per web data
+            const halvingInterval = 2100000;
+            const halvingEpoch = Math.floor(currentBlockHeight / halvingInterval) + 1;
+            const blockReward = 2500; // Current reward after Jan 2022 halving
+
+            document.getElementById('halving').innerText = `Current Halving Epoch: ${halvingEpoch}`;
+            document.getElementById('reward').innerText = `Current Block Reward: ${blockReward} RVN`;
+        }
+
+        // Fetch data on page load
+        fetchRavencoinData();
+
+        // TradingView widget script
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.async = true;
+        script.onload = () => {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "BINANCE:RVNUSDT", // Ravencoin trading pair on Binance
+                "interval": "D", // Daily interval
+                "timezone": "Etc/UTC",
+                "theme": "dark", // Matches Ravencoin theme
+                "style": "1", // Candlestick chart
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_ravencoin"
+            });
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
+
+Changes Made
+Added Data Displays:
+Circulating Supply: Added a <div id="supply"> to display the circulating supply, fetched from CoinGecko’s /coins/ravencoin endpoint, which provides detailed market data including circulating_supply. Formatted with toLocaleString() for readability (e.g., 15,170,000,000 RVN).
+
+Halving Epoch: Added a <div id="halving"> to show the current halving epoch, calculated by dividing the current block height by 2,100,000 (the halving interval) and adding 1 for the epoch number.
+
+Block Reward: Added a <div id="reward"> to display the current block reward, set to 2,500 RVN based on the first halving in January 2022.
+
+Updated API Call:
+Changed the API endpoint from /simple/price to /coins/ravencoin to retrieve both price and circulating supply in one request, reducing API calls and improving efficiency.
+
+Ensured error handling covers both price and supply data.
+
+Hard-Coded Halving Data:
+Block Height: Used 3,868,576 as the current block height, based on May 2025 data from CoinWarz.
+
+Halving Epoch: Calculated as Math.floor(3868576 / 2100000) + 1 = 2 (second epoch, post-January 2022 halving).
+
+Block Reward: Set to 2,500 RVN, as the first halving reduced it from 5,000 RVN.
+
+Note: Block height is hard-coded because real-time block height requires a blockchain node or specific API (e.g., Ravencoin explorer), which isn’t as readily available via free APIs like CoinGecko. For dynamic block height, you’d need to integrate a Ravencoin node or explorer API, which is beyond this scope.
+
+Styling Adjustments:
+Added new <div> elements for supply, halving, and reward with the same styling as the price (font-size: 24px, color: #333, margin: 10px 0) for consistency.
+
+Kept the chart container and TradingView widget unchanged, ensuring the chart displays below the price as requested.
+
+Data Sources and Assumptions
+Circulating Supply: Fetched from CoinGecko, reported as 15.17 billion RVN as of May 2025.
+
+Halving Epoch and Block Reward: Based on Ravencoin’s halving schedule (every 2,100,000 blocks, approximately 4 years). The first halving occurred on January 11, 2022, at block 2,100,000, reducing the reward from 5,000 to 2,500 RVN. The current epoch is 2, and the next halving is expected around 2026 at block 4,200,000.
+
+Block Height: Hard-coded at 3,868,576 from May 2025 data for simplicity, as real-time block height requires a blockchain-specific API.
+
+TradingView Chart: Retained the Binance RVNUSDT pair, as it’s a reliable trading pair for Ravencoin price data.
+
+Notes
+API Limitations: CoinGecko’s free API provides circulating supply and price but not block height or halving data. For real-time block height, consider integrating a Ravencoin blockchain explorer API (e.g., RavenCore or third-party explorers), though these often require setup or paid access.
+
+Halving Epoch Accuracy: The epoch is calculated based on block height. If block times deviate from 1 minute (due to mining difficulty adjustments), the actual calendar date for the next halving (circa 2026) may vary slightly.
+
+Chart Integration: The TradingView widget remains free and reliable, with no changes needed from the previous implementation.
+
+Error Handling: The code handles API errors gracefully, displaying messages in the #error div if price or supply data fails to load.
+
+Future Improvements: To make the halving epoch and block reward dynamic, you could integrate a Ravencoin blockchain explorer API or run a local node to fetch real-time block height, but this increases complexity and may require authentication.
+
+This code now displays the Ravencoin logo, circulating supply (e.g., 15.17 billion RVN), current halving epoch (2), current block reward (2,500 RVN), price (e.g., $0.0132 USD), and an interactive TradingView chart, all in a clean, centered layout. Let me know if you need further modifications or dynamic block height integration
+
+2 posts
+
+15 web pages
+

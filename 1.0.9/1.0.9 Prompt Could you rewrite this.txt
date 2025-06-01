@@ -1,0 +1,197 @@
+1.0.9 Prompt: Could you rewrite this code and underneath the current price of ravencoin, add in a chart via whichever api allows free chart html access?<!-- Created by Grok 3, built by xAI, Prompted by @ImLinker on May 20, 2025, Modified on June 1, 2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravencoin Price</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .banner {
+            width: 100%;
+            background-color: #1a1a3d; /* Ravencoin dark theme */
+            text-align: center;
+        }
+        .banner img {
+            width: 100%;
+            max-width: 600px; /* Adjust to fit the wide logo */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #price {
+            font-size: 24px;
+            color: #333;
+        }
+        #error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <a href="https://ravencoin.org" target="_blank">
+            <img src="https://ravencoin.org/assets/img/media/logo-wide-sm.png" alt="Ravencoin Logo">
+        </a>
+    </div>
+    <h1>Ravencoin Current Price</h1>
+    <div id="price">Loading...</div>
+    <div id="error"></div>
+<script>
+    async function fetchRavencoinPrice() {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ravencoin&vs_currencies=usd');
+            const data = await response.json();
+            
+            if (data.ravencoin && data.ravencoin.usd) {
+                document.getElementById('price').innerText = `$${data.ravencoin.usd.toFixed(4)} USD`;
+            } else {
+                throw new Error('Price data not available');
+            }
+        } catch (error) {
+            document.getElementById('error').innerText = 'Error fetching price: ' + error.message;
+        }
+    }
+
+    // Fetch price on page load
+    fetchRavencoinPrice();
+</script>
+</body>
+</html>
+
+Output:
+To add a chart for Ravencoin prices under the current price, I’ll use the TradingView API, which offers free HTML snippets for embedding cryptocurrency charts, as referenced in the search results. TradingView provides a lightweight widget that’s easy to integrate and supports Ravencoin (RVN) price data. Below is the rewritten code, incorporating the TradingView chart widget below the current price display. The chart will show Ravencoin’s price against USD (RVNUSD) with customizable options like a dark theme to match the Ravencoin aesthetic.
+
+<!-- Created by Grok 3, built by xAI, Prompted by @ImLinker on May 20, 2025, Modified on June 1, 2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravencoin Price</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .banner {
+            width: 100%;
+            background-color: #1a1a3d; /* Ravencoin dark theme */
+            text-align: center;
+        }
+        .banner img {
+            width: 100%;
+            max-width: 600px; /* Adjust to fit the wide logo */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #price {
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+        }
+        #error {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 400px; /* Fixed height for chart */
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <a href="https://ravencoin.org" target="_blank">
+            <img src="https://ravencoin.org/assets/img/media/logo-wide-sm.png" alt="Ravencoin Logo">
+        </a>
+    </div>
+    <h1>Ravencoin Current Price</h1>
+    <div id="price">Loading...</div>
+    <div id="error"></div>
+    <div class="chart-container">
+        <div class="tradingview-widget-container">
+            <div id="tradingview_ravencoin"></div>
+            <div class="tradingview-widget-copyright">
+                <a href="https://www.tradingview.com/symbols/RVNUSD/" rel="noopener" target="_blank">
+                    <span class="blue-text">RVNUSD Chart</span>
+                </a> by TradingView
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch Ravencoin price from CoinGecko
+        async function fetchRavencoinPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ravencoin&vs_currencies=usd');
+                const data = await response.json();
+                
+                if (data.ravencoin && data.ravencoin.usd) {
+                    document.getElementById('price').innerText = `$${data.ravencoin.usd.toFixed(4)} USD`;
+                } else {
+                    throw new Error('Price data not available');
+                }
+            } catch (error) {
+                document.getElementById('error').innerText = 'Error fetching price: ' + error.message;
+            }
+        }
+
+        // Fetch price on page load
+        fetchRavencoinPrice();
+
+        // TradingView widget script
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.async = true;
+        script.onload = () => {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "BINANCE:RVNUSDT", // Ravencoin trading pair on Binance
+                "interval": "D", // Daily interval
+                "timezone": "Etc/UTC",
+                "theme": "dark", // Matches Ravencoin theme
+                "style": "1", // Candlestick chart
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_ravencoin"
+            });
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
+Changes Made:
+Added Chart Container: Introduced a <div class="chart-container"> to hold the TradingView widget, styled with a fixed height (400px) and centered with a max-width of 800px for responsiveness.
+
+Integrated TradingView Widget: Added the TradingView JavaScript library and widget code, configured to display the RVN/USDT trading pair from Binance (a common pair for Ravencoin). The chart uses a dark theme to align with Ravencoin’s branding, a daily interval for clarity, and a candlestick style for detailed price visualization.
+
+Styling Adjustments: Added margins to the #price and #error elements to ensure proper spacing between the price, error message, and chart.
+
+Kept Original Functionality: Retained the CoinGecko API call for fetching the current Ravencoin price, ensuring the price display remains unchanged.
+
+Why TradingView?
+TradingView was chosen because it provides free, embeddable HTML chart widgets that are developer-friendly and widely used, as noted in. It supports real-time and historical price data for Ravencoin (RVNUSD or RVNUSDT) and requires no API key for basic chart embedding, making it ideal for this use case. Other APIs like CoinMarketCap or CoinGecko offer data but require paid plans for advanced charting or have less straightforward free charting options.
+
+Notes:
+API Reliability: The CoinGecko API is used for the price fetch due to its free tier and reliability for real-time data. The TradingView widget pulls chart data directly from supported exchanges like Binance.
+
+Chart Customization: You can adjust the interval (e.g., "1H" for hourly, "1W" for weekly), theme, or style in the TradingView widget configuration to suit your needs.
+
+Dependencies: The code assumes an internet connection to load the TradingView script and CoinGecko API data. No additional setup or API keys are required for this implementation.
+
+Ravencoin Trading Pair: The chart uses "BINANCE:RVNUSDT" as Ravencoin is commonly traded on Binance. If you prefer another exchange or pair, you can modify the symbol parameter (e.g., "COINBASE:RVNUSD" if available).
+
+This code should display the Ravencoin logo, current price, and an interactive price chart below it, all using free APIs. Let me know if you need further tweaks or additional features!
+
+
