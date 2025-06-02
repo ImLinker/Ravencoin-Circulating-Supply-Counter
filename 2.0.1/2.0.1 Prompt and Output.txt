@@ -1,0 +1,404 @@
+Prompt:
+Lets rewrite this and add / 21,000,000,000 to represent the total supply after all blocks have been mined. Next to epoch add a block count counter. Next to current halving reward add the original halving reward of 5,000 $RVN and add a countdown timer to the next halving date. Clean up the formatting and organization of all this info and give the webpage a more organized and less cluttered look.
+
+<!-- Created by Grok 3, built by xAI, Prompted by @ImLinker on May 20, 2025, Modified on June 1, 2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravencoin Price</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .banner {
+            width: 100%;
+            background-color: #1a1a3d; /* Ravencoin dark theme */
+            text-align: center;
+        }
+        .banner img {
+            width: 100%;
+            max-width: 600px; /* Adjust to fit the wide logo */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #price, #supply, #halving, #reward {
+            font-size: 24px;
+            color: #333;
+            margin: 10px 0;
+        }
+        #error {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 400px; /* Fixed height for chart */
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <a href="https://ravencoin.org" target="_blank">
+            <img src="https://ravencoin.org/assets/img/media/logo-wide-sm.png" alt="Ravencoin Logo">
+        </a>
+    </div>
+    <h1>Ravencoin Current Price</h1>
+    <div id="supply">Loading circulating supply...</div>
+    <div id="halving">Loading halving epoch...</div>
+    <div id="reward">Loading block reward...</div>
+    <div id="price">Loading price...</div>
+    <div id="error"></div>
+    <div class="chart-container">
+        <div class="tradingview-widget-container">
+            <div id="tradingview_ravencoin"></div>
+            <div class="tradingview-widget-copyright">
+                <a href="https://www.tradingview.com/symbols/RVNUSD/" rel="noopener" target="_blank">
+                    <span class="blue-text">RVNUSD Chart</span>
+                </a> by TradingView
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchRavencoinData() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/ravencoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
+                const data = await response.json();
+                
+                // Update circulating supply
+                if (data.market_data && data.market_data.circulating_supply) {
+                    document.getElementById('supply').innerText = `Circulating Supply: ${data.market_data.circulating_supply.toLocaleString()} RVN`;
+                } else {
+                    throw new Error('Circulating supply data not available');
+                }
+
+                // Update price
+                if (data.market_data && data.market_data.current_price && data.market_data.current_price.usd) {
+                    document.getElementById('price').innerText = `$${data.market_data.current_price.usd.toFixed(4)} USD`;
+                } else {
+                    throw new Error('Price data not available');
+                }
+            } catch (error) {
+                document.getElementById('error').innerText = 'Error fetching data: ' + error.message;
+            }
+
+            // Hard-coded halving epoch and block reward based on known data
+            const currentBlockHeight = 3868576; // As of May 2025, per web data
+            const halvingInterval = 2100000;
+            const halvingEpoch = Math.floor(currentBlockHeight / halvingInterval) + 1;
+            const blockReward = 2500; // Current reward after Jan 2022 halving
+
+            document.getElementById('halving').innerText = `Current Halving Epoch: ${halvingEpoch}`;
+            document.getElementById('reward').innerText = `Current Block Reward: ${blockReward} RVN`;
+        }
+
+        // Fetch data on page load
+        fetchRavencoinData();
+
+        // TradingView widget script
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.async = true;
+        script.onload = () => {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "BINANCE:RVNUSDT", // Ravencoin trading pair on Binance
+                "interval": "D", // Daily interval
+                "timezone": "Etc/UTC",
+                "theme": "dark", // Matches Ravencoin theme
+                "style": "1", // Candlestick chart
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_ravencoin"
+            });
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
+
+Output:
+Below is the rewritten HTML, incorporating your requests: adding the total supply of 21,000,000,000 RVN, including a block count counter next to the epoch, adding the original halving reward of 5,000 RVN, and including a countdown timer to the next halving date. The formatting and organization have been cleaned up for a less cluttered, more professional look with improved styling. The countdown timer assumes the next halving occurs at block 4,200,000 (based on the halving interval of 2,100,000 blocks), and estimates time assuming an average block time of 1 minute for Ravencoin.
+
+<!-- Created by Grok 3, built by xAI, Prompted by @ImLinker on May 20, 2025, Modified on June 2, 2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravencoin Price and Stats</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .banner {
+            background-color: #1a1a3d; /* Ravencoin dark theme */
+            padding: 10px 0;
+            text-align: center;
+        }
+        .banner img {
+            max-width: 500px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5em;
+            text-align: center;
+            margin: 20px 0;
+            color: #1a1a3d;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .stat-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.2em;
+            color: #1a1a3d;
+        }
+        .stat-card p {
+            margin: 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+        #error {
+            color: #d32f2f;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+        .chart-container {
+            max-width: 100%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .tradingview-widget-copyright {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .tradingview-widget-copyright a {
+            color: #1a1a3d;
+            text-decoration: none;
+        }
+        .tradingview-widget-copyright a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <a href="https://ravencoin.org" target="_blank">
+            <img src="https://ravencoin.org/assets/img/media/logo-wide-sm.png" alt="Ravencoin Logo">
+        </a>
+    </div>
+    <div class="container">
+        <h1>Ravencoin Price and Stats</h1>
+        <div id="error"></div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Current Price</h3>
+                <p id="price">Loading price...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Supply</h3>
+                <p id="supply">Loading circulating supply...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Halving Epoch</h3>
+                <p id="halving">Loading epoch...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Block Reward</h3>
+                <p id="reward">Loading reward...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Next Halving</h3>
+                <p id="halving-countdown">Calculating...</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="tradingview-widget-container">
+                <div id="tradingview_ravencoin"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/RVNUSD/" rel="noopener" target="_blank">
+                        <span class="blue-text">RVNUSD Chart</span>
+                    </a> by TradingView
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchRavencoinData() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/ravencoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
+                const data = await response.json();
+                
+                // Update price
+                if (data.market_data && data.market_data.current_price && data.market_data.current_price.usd) {
+                    document.getElementById('price').innerText = `$${data.market_data.current_price.usd.toFixed(4)} USD`;
+                } else {
+                    throw new Error('Price data not available');
+                }
+
+                // Update supply
+                if (data.market_data && data.market_data.circulating_supply) {
+                    document.getElementById('supply').innerText = `${data.market_data.circulating_supply.toLocaleString()} / 21,000,000,000 RVN`;
+                } else {
+                    throw new Error('Circulating supply data not available');
+                }
+            } catch (error) {
+                document.getElementById('error').innerText = 'Error fetching data: ' + error.message;
+            }
+
+            // Hard-coded halving data
+            const currentBlockHeight = 3868576; // As of May 2025
+            const halvingInterval = 2100000;
+            const halvingEpoch = Math.floor(currentBlockHeight / halvingInterval) + 1;
+            const currentReward = 2500; // Current reward after Jan 2022 halving
+            const originalReward = 5000; // Original reward
+
+            // Calculate blocks until next halving
+            const nextHalvingBlock = halvingEpoch * halvingInterval;
+            const blocksRemaining = nextHalvingBlock - currentBlockHeight;
+
+            // Estimate time until next halving (1 block per minute)
+            const secondsPerBlock = 60;
+            const secondsRemaining = blocksRemaining * secondsPerBlock;
+            
+            document.getElementById('halving').innerText = `Epoch ${halvingEpoch} (Block ${currentBlockHeight.toLocaleString()})`;
+            document.getElementById('reward').innerText = `${currentReward} RVN (Original: ${originalReward} RVN)`;
+
+            // Countdown timer
+            function updateCountdown() {
+                const now = new Date();
+                const halvingDate = new Date(now.getTime() + secondsRemaining * 1000);
+                const timeDiff = halvingDate - now;
+
+                if (timeDiff <= 0) {
+                    document.getElementById('halving-countdown').innerText = 'Halving in progress or data outdated';
+                    return;
+                }
+
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                document.getElementById('halving-countdown').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            // Update countdown every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        // Fetch data on page load
+        fetchRavencoinData();
+
+        // TradingView widget
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.async = true;
+        script.onload = () => {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "BINANCE:RVNUSDT",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_ravencoin"
+            });
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
+Key Changes and Improvements:
+Total Supply: Added / 21,000,000,000 RVN to the circulating supply display in the format circulating / total.
+
+Block Count Counter: Added (Block ${currentBlockHeight.toLocaleString()}) next to the halving epoch.
+
+Original Halving Reward: Included (Original: 5000 RVN) in the block reward display.
+
+Countdown Timer: Added a countdown timer to the next halving (block 4,200,000), assuming 1-minute block times, displayed in days, hours, minutes, and seconds.
+
+Improved Formatting:
+Organized stats into a responsive grid layout (stats-grid) with individual stat-card containers for a clean, card-based design.
+
+Used a light background (#f4f4f9) with white cards (#fff) and subtle shadows for a modern look.
+
+Centered content with a max-width container for better readability.
+
+Improved typography with consistent font sizes and spacing.
+
+Reduced clutter by grouping related info and using rounded corners and shadows for visual appeal.
+
+Styling Enhancements:
+Banner is more compact with padding adjustments.
+
+Chart container has a white background and shadow to match the stats grid.
+
+Error messages are styled for clarity and prominence.
+
+TradingView widget retains the dark theme to align with Ravencoin’s branding.
+
+Responsive Design: The grid layout adapts to different screen sizes using repeat(auto-fit, minmax(250px, 1fr)).
+
+Countdown Logic: Calculates blocks remaining to the next halving (block 4,200,000) and converts to time using a 60-second block interval, updating every second.
+
+Notes:
+The block height (3,868,576) is hard-coded as per the original code. For real-time accuracy, you’d need an API to fetch the current block height (e.g., Ravencoin blockchain explorers).
+
+The countdown assumes a 1-minute block time, which may vary slightly in practice. Adjust secondsPerBlock if more precise data is available.
+
+The TradingView widget remains unchanged but is now better integrated into the styled chart container.
+
+The design is clean, professional, and aligns with Ravencoin’s dark theme while being user-friendly and responsive.
+
+If you need further tweaks (e.g., live block height data, specific styling colors, or additional features), let me know!
+
